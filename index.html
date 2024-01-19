@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     body {
-      font-family: 'Calibri' ;
+      font-family: 'sans-serif', ;
       margin: 0;
       padding: 0;
       background-color: rgba(0, 0, 255, 0.3); /* Fundo azul com 30% de opacidade */
@@ -90,43 +89,42 @@
     }
   </style>
 </head>
-
 <body>
 
-  <div class="container">
-    <div class="form-container">
-      <h2>Cadastro</h2>
-      <form id="userForm">
-        <div class="form-group">
-          <label for="name">Nome:</label>
-          <input type="text" class="form-control" id="name" required>
-        </div>
-        <div class="form-group">
-          <label for="department">Departamento:</label>
-          <input type="text" class="form-control" id="department" required>
-        </div>
-        <div class="form-group">
-          <label for="ramal">Ramal:</label>
-          <input type="text" class="form-control" id="ramal" required>
-        </div>
-        <button type="button" class="btn btn-primary" onclick="salvarContato()">Salvar</button>
-        <!--<button type="button" class="btn btn-danger" onclick="limparLocalStorage()">Limpar LocalStorage</button>  -->
-      </form>
-    </div>
-
-    <div class="contacts-container">
-      <h2>Lista de Ramais</h2>
-      <div class="search-bar">
-        <input type="text" class="form-control" id="searchInput" placeholder="Pesquisar" oninput="filtrarContatos()">
+<div class="container">
+  <div class="form-container">
+    <h2>Cadastro</h2>
+    <form id="userForm">
+      <div class="form-group">
+        <label for="name">Nome:</label>
+        <input type="text" class="form-control" id="name" required>
       </div>
-      <ul id="contactsList" class="list-unstyled"></ul>
-    </div>
+      <div class="form-group">
+        <label for="department">Departamento:</label>
+        <input type="text" class="form-control" id="department" required>
+      </div>
+      <div class="form-group">
+        <label for="ramal">Ramal:</label>
+        <input type="text" class="form-control" id="ramal" required>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="salvarContato()">Salvar</button>
+      <button type="button" class="btn btn-danger" onclick="limparLocalStorage()">Limpar LocalStorage</button>
+    </form>
   </div>
 
-  <script>
-    // Lista de contatos em formato JSON
-    const contatosJson = [
-    {"name": "RTO", "department": "Recepção", "ramal": "1095"},
+  <div class="contacts-container">
+    <h2>Lista de Ramais</h2>
+    <div class="search-bar">
+      <input type="text" class="form-control" id="searchInput" placeholder="Pesquisar" oninput="filtrarContatos()">
+    </div>
+    <ul id="contactsList" class="list-unstyled"></ul>
+  </div>
+</div>
+
+<script>
+  // Lista de contatos em formato JSON
+  let contatosJson = [
+  {"name": "RTO", "department": "Recepção", "ramal": "1095"},
   {"name": "RTO - SANTANA", "department": "Recepção", "ramal": "1080"},
   {"name": "Sala de Reunião - Santana", "department": "Reunião", "ramal": "1082"},
   {"name": "Sala de Reunião", "department": "Jurídico", "ramal": "1024"},
@@ -196,163 +194,151 @@
   {"name": "Tais Fausto", "department": "DEPARTAMENTO PESSOAL", "ramal": "1026"},
   {"name": "Taise Santana", "department": "DEPARTAMENTO PESSOAL", "ramal": "1025 - 1126"},
   {"name": "Talita Barros", "department": "DEPARTAMENTO PESSOAL", "ramal": "1027"},
-      // ... adicione outros contatos conforme necessário
-    ];
+    // Adicione os demais contatos aqui
+  ];
 
-    function salvarContato() {
-      const name = document.getElementById('name').value;
-      const department = document.getElementById('department').value;
-      const ramal = document.getElementById('ramal').value;
+  function salvarContato() {
+    const name = document.getElementById('name').value;
+    const department = document.getElementById('department').value;
+    const ramal = document.getElementById('ramal').value;
 
-      const contato = { name, department, ramal };
+    const contato = { name, department, ramal };
 
-      // Recuperar contatos existentes do localStorage
-      const contatosSalvos = JSON.parse(localStorage.getItem('contatos')) || [];
+    // Adicionar novo contato ao JSON
+    contatosJson.push(contato);
 
-      // Adicionar novo contato
-      contatosSalvos.push(contato);
+    // Salvar no localStorage
+    localStorage.setItem('contatos', JSON.stringify(contatosJson));
 
-      // Salvar no localStorage
-      localStorage.setItem('contatos', JSON.stringify(contatosSalvos));
+    // Limpar formulário
+    document.getElementById('userForm').reset();
 
-      // Limpar formulário
-      document.getElementById('userForm').reset();
+    // Atualizar lista de contatos
+    exibirContatos();
+  }
 
-      // Atualizar lista de contatos
-      exibirContatos();
-    }
+  function exibirContatos() {
+    const contactsList = document.getElementById('contactsList');
 
-    function exibirContatos() {
-      const contatosSalvos = JSON.parse(localStorage.getItem('contatos')) || [];
-      const contactsList = document.getElementById('contactsList');
+    // Limpar a lista antes de exibir os contatos
+    contactsList.innerHTML = '';
 
-      // Limpar a lista antes de exibir os contatos
-      contactsList.innerHTML = '';
+    contatosJson.forEach((contato, index) => {
+      const listItem = document.createElement('li');
+      listItem.classList.add('contact-item');
 
-      contatosSalvos.forEach((contato, index) => {
-        const listItem = document.createElement('li');
-        listItem.classList.add('contact-item');
+      const infoContainer = document.createElement('div');
+      infoContainer.innerHTML = `<strong>${contato.name}</strong> - ${contato.department} - Ramal: ${contato.ramal}`;
 
-        const infoContainer = document.createElement('div');
-        infoContainer.innerHTML = `
-          <strong>${contato.name}</strong> - ${contato.department} - Ramal: ${contato.ramal}
-        `;
+      const actionsContainer = document.createElement('div');
 
-        const actionsContainer = document.createElement('div');
+      const editButton = document.createElement('button');
+      editButton.classList.add('btn', 'btn-warning', 'mr-2');
+      editButton.innerHTML = 'Editar';
+      editButton.onclick = () => editarContato(index);
 
-        const editButton = document.createElement('button');
-        editButton.classList.add('btn', 'btn-warning', 'mr-2');
-        editButton.innerHTML = 'Editar';
-        editButton.onclick = () => editarContato(index);
+      const deleteButton = document.createElement('button');
+      deleteButton.classList.add('btn', 'btn-danger');
+      deleteButton.innerHTML = 'Excluir';
+      deleteButton.onclick = () => excluirContato(index);
 
-        const deleteButton = document.createElement('button');
-        deleteButton.classList.add('btn', 'btn-danger');
-        deleteButton.innerHTML = 'Excluir';
-        deleteButton.onclick = () => excluirContato(index);
+      actionsContainer.appendChild(editButton);
+      actionsContainer.appendChild(deleteButton);
 
-        actionsContainer.appendChild(editButton);
-        actionsContainer.appendChild(deleteButton);
+      listItem.appendChild(infoContainer);
+      listItem.appendChild(actionsContainer);
 
-        listItem.appendChild(infoContainer);
-        listItem.appendChild(actionsContainer);
+      contactsList.appendChild(listItem);
+    });
+  }
 
-        contactsList.appendChild(listItem);
-      });
-    }
-
-    function filtrarContatos() {
-      const contatosSalvos = JSON.parse(localStorage.getItem('contatos')) || [];
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-      const filteredContacts = contatosSalvos.filter(contato =>
+  function filtrarContatos() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const filteredContacts = contatosJson.filter(
+      contato =>
         contato.name.toLowerCase().includes(searchTerm) ||
         contato.department.toLowerCase().includes(searchTerm) ||
         contato.ramal.toLowerCase().includes(searchTerm)
-      );
+    );
 
-      // Exibir contatos filtrados
-      const contactsList = document.getElementById('contactsList');
+    // Exibir contatos filtrados
+    const contactsList = document.getElementById('contactsList');
 
-      // Limpar a lista antes de exibir os contatos filtrados
-      contactsList.innerHTML = '';
+    // Limpar a lista antes de exibir os contatos filtrados
+    contactsList.innerHTML = '';
 
-      filteredContacts.forEach((contato, index) => {
-        const listItem = document.createElement('li');
-        listItem.classList.add('contact-item');
+    filteredContacts.forEach((contato, index) => {
+      const listItem = document.createElement('li');
+      listItem.classList.add('contact-item');
 
-        const infoContainer = document.createElement('div');
-        infoContainer.innerHTML = `
-          <strong>${contato.name}</strong> - ${contato.department} - Ramal: ${contato.ramal}
-        `;
+      const infoContainer = document.createElement('div');
+      infoContainer.innerHTML = `<strong>${contato.name}</strong> - ${contato.department} - Ramal: ${contato.ramal}`;
 
-        const actionsContainer = document.createElement('div');
+      const actionsContainer = document.createElement('div');
 
-        const editButton = document.createElement('button');
-        editButton.classList.add('btn', 'btn-warning', 'mr-2');
-        editButton.innerHTML = 'Editar';
-        editButton.onclick = () => editarContato(index);
+      const editButton = document.createElement('button');
+      editButton.classList.add('btn', 'btn-warning', 'mr-2');
+      editButton.innerHTML = 'Editar';
+      editButton.onclick = () => editarContato(index);
 
-        const deleteButton = document.createElement('button');
-        deleteButton.classList.add('btn', 'btn-danger');
-        deleteButton.innerHTML = 'Excluir';
-        deleteButton.onclick = () => excluirContato(index);
+      const deleteButton = document.createElement('button');
+      deleteButton.classList.add('btn', 'btn-danger');
+      deleteButton.innerHTML = 'Excluir';
+      deleteButton.onclick = () => excluirContato(index);
 
-        actionsContainer.appendChild(editButton);
-        actionsContainer.appendChild(deleteButton);
+      actionsContainer.appendChild(editButton);
+      actionsContainer.appendChild(deleteButton);
 
-        listItem.appendChild(infoContainer);
-        listItem.appendChild(actionsContainer);
+      listItem.appendChild(infoContainer);
+      listItem.appendChild(actionsContainer);
 
-        contactsList.appendChild(listItem);
-      });
-    }
+      contactsList.appendChild(listItem);
+    });
+  }
 
-    function limparLocalStorage() {
-      // Limpar o localStorage
-      localStorage.removeItem('contatos');
+  function limparLocalStorage() {
+    // Limpar o localStorage
+    localStorage.removeItem('contatos');
 
-      // Atualizar lista de contatos
-      exibirContatos();
-    }
+    // Reiniciar a lista de contatos
+    contatosJson = [];
 
-    function editarContato(index) {
-      const contatosSalvos = JSON.parse(localStorage.getItem('contatos')) || [];
-      const contato = contatosSalvos[index];
+    // Atualizar lista de contatos
+    exibirContatos();
+  }
 
-      // Preencher o formulário de edição
-      document.getElementById('name').value = contato.name;
-      document.getElementById('department').value = contato.department;
-      document.getElementById('ramal').value = contato.ramal;
+  function editarContato(index) {
+    const contato = contatosJson[index];
 
-      // Remover o contato da lista
-      contatosSalvos.splice(index, 1);
+    // Preencher o formulário de edição
+    document.getElementById('name').value = contato.name;
+    document.getElementById('department').value = contato.department;
+    document.getElementById('ramal').value = contato.ramal;
 
-      // Atualizar o localStorage
-      localStorage.setItem('contatos', JSON.stringify(contatosSalvos));
+    // Remover o contato da lista
+    contatosJson.splice(index, 1);
 
-      // Atualizar a lista de contatos exibida
-      exibirContatos();
-    }
-
-    function excluirContato(index) {
-      const contatosSalvos = JSON.parse(localStorage.getItem('contatos')) || [];
-
-      // Remover o contato da lista
-      contatosSalvos.splice(index, 1);
-
-      // Atualizar o localStorage
-      localStorage.setItem('contatos', JSON.stringify(contatosSalvos));
-
-      // Atualizar a lista de contatos exibida
-      exibirContatos();
-    }
-
-    // Inicializar lista de contatos com o JSON fornecido
+    // Atualizar o localStorage
     localStorage.setItem('contatos', JSON.stringify(contatosJson));
 
-    // Exibir contatos na inicialização
+    // Atualizar a lista de contatos exibida
     exibirContatos();
-  </script>
+  }
+
+  function excluirContato(index) {
+    // Remover o contato da lista
+    contatosJson.splice(index, 1);
+
+    // Atualizar o localStorage
+    localStorage.setItem('contatos', JSON.stringify(contatosJson));
+
+    // Atualizar a lista de contatos exibida
+    exibirContatos();
+  }
+
+  // Exibir contatos na inicialização
+  exibirContatos();
+</script>
 
 </body>
-
 </html>
