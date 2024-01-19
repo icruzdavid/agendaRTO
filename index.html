@@ -34,27 +34,12 @@
       margin-bottom: 20px;
     }
 
-    .contact-item {
+    .contact-card {
       margin-bottom: 20px;
-      padding: 10px;
+      padding: 15px;
       border: 1px solid #ccc;
-      border-radius: 5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .contact-item .btn {
-      padding: 0.2rem 0.5rem;
-      font-size: 12px;
-    }
-
-    .contact-item .btn-group {
-      display: flex;
-    }
-
-    .contact-item .btn-group button {
-      margin-right: 5px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     @media (min-width: 576px) {
@@ -71,20 +56,6 @@
       .contacts-container {
         border-left: 1px solid #ccc;
         padding-left: 20px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .contact-item .btn {
-        padding: 0.2rem 0.5rem;
-        font-size: 12px;
-      }
-    }
-
-    @media (max-width: 576px) {
-      .contact-item .btn {
-        padding: 0.2rem 0.3rem;
-        font-size: 10px;
       }
     }
   </style>
@@ -117,13 +88,12 @@
     <div class="search-bar">
       <input type="text" class="form-control" id="searchInput" placeholder="Pesquisar" oninput="filtrarContatos()">
     </div>
-    <ul id="contactsList" class="list-unstyled"></ul>
+    <div id="contactsList"></div>
   </div>
 </div>
 
 <script>
-  // Lista de contatos em formato JSON
-  let contatosJson = [
+  const contatosJson = [
   {"name": "RTO", "department": "Recepção", "ramal": "1095"},
   {"name": "RTO - SANTANA", "department": "Recepção", "ramal": "1080"},
   {"name": "Sala de Reunião - Santana", "department": "Reunião", "ramal": "1082"},
@@ -194,7 +164,7 @@
   {"name": "Tais Fausto", "department": "DEPARTAMENTO PESSOAL", "ramal": "1026"},
   {"name": "Taise Santana", "department": "DEPARTAMENTO PESSOAL", "ramal": "1025 - 1126"},
   {"name": "Talita Barros", "department": "DEPARTAMENTO PESSOAL", "ramal": "1027"},
-    // Adicione os demais contatos aqui
+    // ... (restante dos contatos)
   ];
 
   function salvarContato() {
@@ -202,10 +172,8 @@
     const department = document.getElementById('department').value;
     const ramal = document.getElementById('ramal').value;
 
-    const contato = { name, department, ramal };
-
-    // Adicionar novo contato ao JSON
-    contatosJson.push(contato);
+    const novoContato = { name, department, ramal };
+    contatosJson.push(novoContato);
 
     // Salvar no localStorage
     localStorage.setItem('contatos', JSON.stringify(contatosJson));
@@ -223,42 +191,22 @@
     // Limpar a lista antes de exibir os contatos
     contactsList.innerHTML = '';
 
-    contatosJson.forEach((contato, index) => {
-      const listItem = document.createElement('li');
-      listItem.classList.add('contact-item');
-
-      const infoContainer = document.createElement('div');
-      infoContainer.innerHTML = `<strong>${contato.name}</strong> - ${contato.department} - Ramal: ${contato.ramal}`;
-
-      const actionsContainer = document.createElement('div');
-
-      const editButton = document.createElement('button');
-      editButton.classList.add('btn', 'btn-warning', 'mr-2');
-      editButton.innerHTML = 'Editar';
-      editButton.onclick = () => editarContato(index);
-
-      const deleteButton = document.createElement('button');
-      deleteButton.classList.add('btn', 'btn-danger');
-      deleteButton.innerHTML = 'Excluir';
-      deleteButton.onclick = () => excluirContato(index);
-
-      actionsContainer.appendChild(editButton);
-      actionsContainer.appendChild(deleteButton);
-
-      listItem.appendChild(infoContainer);
-      listItem.appendChild(actionsContainer);
-
-      contactsList.appendChild(listItem);
+    contatosJson.forEach(contato => {
+      const card = document.createElement('div');
+      card.classList.add('contact-card');
+      card.innerHTML = `
+        <strong>${contato.name}</strong> - ${contato.department} - Ramal: ${contato.ramal}
+      `;
+      contactsList.appendChild(card);
     });
   }
 
   function filtrarContatos() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const filteredContacts = contatosJson.filter(
-      contato =>
-        contato.name.toLowerCase().includes(searchTerm) ||
-        contato.department.toLowerCase().includes(searchTerm) ||
-        contato.ramal.toLowerCase().includes(searchTerm)
+    const filteredContacts = contatosJson.filter(contato =>
+      contato.name.toLowerCase().includes(searchTerm) ||
+      contato.department.toLowerCase().includes(searchTerm) ||
+      contato.ramal.toLowerCase().includes(searchTerm)
     );
 
     // Exibir contatos filtrados
@@ -267,32 +215,13 @@
     // Limpar a lista antes de exibir os contatos filtrados
     contactsList.innerHTML = '';
 
-    filteredContacts.forEach((contato, index) => {
-      const listItem = document.createElement('li');
-      listItem.classList.add('contact-item');
-
-      const infoContainer = document.createElement('div');
-      infoContainer.innerHTML = `<strong>${contato.name}</strong> - ${contato.department} - Ramal: ${contato.ramal}`;
-
-      const actionsContainer = document.createElement('div');
-
-      const editButton = document.createElement('button');
-      editButton.classList.add('btn', 'btn-warning', 'mr-2');
-      editButton.innerHTML = 'Editar';
-      editButton.onclick = () => editarContato(index);
-
-      const deleteButton = document.createElement('button');
-      deleteButton.classList.add('btn', 'btn-danger');
-      deleteButton.innerHTML = 'Excluir';
-      deleteButton.onclick = () => excluirContato(index);
-
-      actionsContainer.appendChild(editButton);
-      actionsContainer.appendChild(deleteButton);
-
-      listItem.appendChild(infoContainer);
-      listItem.appendChild(actionsContainer);
-
-      contactsList.appendChild(listItem);
+    filteredContacts.forEach(contato => {
+      const card = document.createElement('div');
+      card.classList.add('contact-card');
+      card.innerHTML = `
+        <strong>${contato.name}</strong> - ${contato.department} - Ramal: ${contato.ramal}
+      `;
+      contactsList.appendChild(card);
     });
   }
 
@@ -300,39 +229,7 @@
     // Limpar o localStorage
     localStorage.removeItem('contatos');
 
-    // Reiniciar a lista de contatos
-    contatosJson = [];
-
     // Atualizar lista de contatos
-    exibirContatos();
-  }
-
-  function editarContato(index) {
-    const contato = contatosJson[index];
-
-    // Preencher o formulário de edição
-    document.getElementById('name').value = contato.name;
-    document.getElementById('department').value = contato.department;
-    document.getElementById('ramal').value = contato.ramal;
-
-    // Remover o contato da lista
-    contatosJson.splice(index, 1);
-
-    // Atualizar o localStorage
-    localStorage.setItem('contatos', JSON.stringify(contatosJson));
-
-    // Atualizar a lista de contatos exibida
-    exibirContatos();
-  }
-
-  function excluirContato(index) {
-    // Remover o contato da lista
-    contatosJson.splice(index, 1);
-
-    // Atualizar o localStorage
-    localStorage.setItem('contatos', JSON.stringify(contatosJson));
-
-    // Atualizar a lista de contatos exibida
     exibirContatos();
   }
 
